@@ -5,10 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServidorJogador1 extends javax.swing.JFrame {
-    
-    private int placarJ1 = 0;
-    private int placarJ2 = 0;
-    
+
+    Comunicador comunicador;
+
     public ServidorJogador1() {
         initComponents();
 
@@ -20,20 +19,23 @@ public class ServidorJogador1 extends javax.swing.JFrame {
                     servidor = new ServerSocket(12345);
 
                     socket_jogador2 = servidor.accept();
-                    
-                    saida = new ObjectOutputStream(socket_jogador2.getOutputStream());
-                    entrada = new ObjectInputStream(socket_jogador2.getInputStream());
+
+                    comunicador = new Comunicador(socket_jogador2);
+
                     System.out.println("Cliente conectado: " + socket_jogador2.getInetAddress().getHostAddress());
 
+                    //para enviar ao jogador 2
+                    //saida = new ObjectOutputStream(socket_jogador2.getOutputStream());
                     while (true) {
-                        c = (Componente) entrada.readObject();
+                        c = comunicador.recebeComponente();
+                        //se for jogador
                         if (c.tipo == Componente.JOGADOR) {
                             //redesenha ou reposiciona o jogador2(cliente) no ambiente do jogador1(servidor)
-                            jButtonJogador2.setBounds(c.x, c.y, c.largura, c.altura);
+                            btnJ2.setBounds(c.x, c.y, c.largura, c.altura);
                         } //se for fruta
                         else if (c.tipo == Componente.FRUTA) {
-                            jButtonFruta.setBounds(c.x, c.y, c.largura, c.altura);
-                            placarJ2++;
+                            btnFruta.setBounds(c.x, c.y, c.largura, c.altura);
+                            Movimenta.adicionarPonto(2, txtPlacar);
                         }
                     }
                 } catch (Exception e) {
@@ -47,136 +49,189 @@ public class ServidorJogador1 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelJogador1 = new javax.swing.JPanel();
-        jButtonJogador1 = new javax.swing.JButton();
-        jButtonJogador2 = new javax.swing.JButton();
-        jButtonFruta = new javax.swing.JButton();
-        lblPlacar = new javax.swing.JLabel();
+        pnlJogo = new javax.swing.JPanel();
+        btnJ2 = new javax.swing.JButton();
+        btnFruta = new javax.swing.JButton();
+        btnJ1 = new javax.swing.JButton();
+        pnlSuperior = new javax.swing.JPanel();
+        lblJ1 = new javax.swing.JLabel();
+        lblJ2 = new javax.swing.JLabel();
+        txtPlacar = new javax.swing.JTextField();
+        btnReiniciar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jogador 1 - SERVIDOR");
-        setSize(new java.awt.Dimension(5, 5));
 
-        jButtonJogador1.setText("j1");
-        jButtonJogador1.setFocusable(false);
+        btnJ2.setText("j2");
+        btnJ2.setFocusable(false);
 
-        jButtonJogador2.setText("j2");
-        jButtonJogador2.setFocusable(false);
-
-        jButtonFruta.setBackground(new java.awt.Color(255, 204, 0));
-        jButtonFruta.setText("@");
-        jButtonFruta.addKeyListener(new java.awt.event.KeyAdapter() {
+        btnFruta.setBackground(new java.awt.Color(255, 204, 0));
+        btnFruta.setText("@");
+        btnFruta.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jButtonFrutaKeyPressed(evt);
+                btnFrutaKeyPressed(evt);
             }
         });
 
-        lblPlacar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblPlacar.setText("Placar: J1 (0) vs J2 (0)");
+        btnJ1.setText("j1");
+        btnJ1.setFocusable(false);
 
-        javax.swing.GroupLayout jPanelJogador1Layout = new javax.swing.GroupLayout(jPanelJogador1);
-        jPanelJogador1.setLayout(jPanelJogador1Layout);
-        jPanelJogador1Layout.setHorizontalGroup(
-            jPanelJogador1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelJogador1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonJogador1)
-                .addGap(85, 85, 85)
-                .addComponent(jButtonFruta)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
-                .addComponent(jButtonJogador2)
+        javax.swing.GroupLayout pnlJogoLayout = new javax.swing.GroupLayout(pnlJogo);
+        pnlJogo.setLayout(pnlJogoLayout);
+        pnlJogoLayout.setHorizontalGroup(
+            pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlJogoLayout.createSequentialGroup()
+                .addGroup(pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlJogoLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnJ2))
+                    .addGroup(pnlJogoLayout.createSequentialGroup()
+                        .addGroup(pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlJogoLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(btnJ1))
+                            .addGroup(pnlJogoLayout.createSequentialGroup()
+                                .addGap(209, 209, 209)
+                                .addComponent(btnFruta)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanelJogador1Layout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addComponent(lblPlacar)
+        );
+        pnlJogoLayout.setVerticalGroup(
+            pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlJogoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnJ1)
+                .addGap(178, 178, 178)
+                .addComponent(btnFruta)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE)
+                .addComponent(btnJ2)
+                .addContainerGap())
+        );
+
+        lblJ1.setText("Jogador 1");
+
+        lblJ2.setText("Jogador 2");
+
+        txtPlacar.setEditable(false);
+        txtPlacar.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtPlacar.setText("x");
+        txtPlacar.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createCompoundBorder()));
+        txtPlacar.setEnabled(false);
+
+        btnReiniciar.setText("Reiniciar Jogo");
+        btnReiniciar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReiniciarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlSuperiorLayout = new javax.swing.GroupLayout(pnlSuperior);
+        pnlSuperior.setLayout(pnlSuperiorLayout);
+        pnlSuperiorLayout.setHorizontalGroup(
+            pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addComponent(lblJ1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addComponent(txtPlacar, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
+                .addComponent(lblJ2)
+                .addGap(51, 51, 51))
+            .addGroup(pnlSuperiorLayout.createSequentialGroup()
+                .addGap(163, 163, 163)
+                .addComponent(btnReiniciar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanelJogador1Layout.setVerticalGroup(
-            jPanelJogador1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelJogador1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblPlacar)
-                .addGap(105, 105, 105)
-                .addGroup(jPanelJogador1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonFruta)
-                    .addComponent(jButtonJogador2)
-                    .addComponent(jButtonJogador1))
-                .addContainerGap(152, Short.MAX_VALUE))
+        pnlSuperiorLayout.setVerticalGroup(
+            pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
+                .addContainerGap(43, Short.MAX_VALUE)
+                .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblJ1)
+                    .addComponent(lblJ2)
+                    .addComponent(txtPlacar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnReiniciar)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanelJogador1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+            .addComponent(pnlSuperior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnlJogo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelJogador1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(pnlSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pnlJogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonFrutaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonFrutaKeyPressed
-
+    private void btnFrutaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnFrutaKeyPressed
         switch (evt.getKeyCode()) {
             case 37:
-                //System.out.println("indo para esquerda");
-                Movimenta.irEsquerda(jButtonJogador1);
+                Movimenta.irEsquerda(btnJ1);
                 break;
             case 38:
-                //System.out.println("indo para cima");
-                Movimenta.irCima(jButtonJogador1);
+                Movimenta.irCima(btnJ1);
                 break;
             case 39:
-                //System.out.println("indo para direita");
-                Movimenta.irDireita(jButtonJogador1, jPanelJogador1.getBounds().width);
+                Movimenta.irDireita(btnJ1, pnlJogo.getBounds().width);
                 break;
             case 40:
-                //System.out.println("indo para baixo");
-                Movimenta.irBaixo(jButtonJogador1, jPanelJogador1.getBounds().height);
+                Movimenta.irBaixo(btnJ1, pnlJogo.getBounds().height);
                 break;
         }
-        if (Movimenta.pegou(jButtonJogador1, jButtonFruta)) {
-            placarJ1++;
-            atualizarPlacarLabel();
-            Movimenta.posicionaAleatorio(jButtonFruta,
-                    jPanelJogador1.getBounds().width,
-                    jPanelJogador1.getBounds().height);
-            try {
-                saida.flush();
-                c = new Componente(jButtonFruta.getBounds().x,
-                        jButtonFruta.getBounds().y,
-                        jButtonFruta.getBounds().width,
-                        jButtonFruta.getBounds().height);
-                c.tipo = Componente.FRUTA;
-                saida.writeObject(c);
-            } catch (Exception e) {
-                System.out.println("Erro ao enviar a fruta");
+        if (Movimenta.pegou(btnJ1, btnFruta)) {
+            Movimenta.adicionarPonto(1, txtPlacar);
+            Movimenta.posicionaAleatorio(btnFruta,
+                    pnlJogo.getBounds().width,
+                    pnlJogo.getBounds().height);
+
+            if (!Movimenta.isJogoFinalizado()) {
+                Movimenta.posicionaAleatorio(btnFruta,
+                        pnlJogo.getBounds().width,
+                        pnlJogo.getBounds().height);
+                try {
+                    c = new Componente(btnFruta.getBounds().x,
+                            btnFruta.getBounds().y,
+                            btnFruta.getBounds().width,
+                            btnFruta.getBounds().height);
+                    c.tipo = Componente.FRUTA;
+                    comunicador.enviaComponente(c);
+                } catch (Exception e) {
+                    System.out.println("Erro ao enviar a fruta");
+                }
             }
         }
-        //enviando o botao do jogador1 e o botao da fruta para o cliente
-        try {
-            saida.flush();
-            c = new Componente(jButtonJogador1.getBounds().x,
-                    jButtonJogador1.getBounds().y,
-                    jButtonJogador1.getBounds().width,
-                    jButtonJogador1.getBounds().height);
-            c.tipo = Componente.JOGADOR;
-            saida.writeObject(c);
 
+        try {
+            c = new Componente(btnJ1.getBounds().x,
+                    btnJ1.getBounds().y,
+                    btnJ1.getBounds().width,
+                    btnJ1.getBounds().height);
+            c.tipo = Componente.JOGADOR;
+            comunicador.enviaComponente(c);
         } catch (Exception e) {
             System.out.println("Erro ao enviar jogador1 ao cliente!!");
         }
-    }//GEN-LAST:event_jButtonFrutaKeyPressed
+    }//GEN-LAST:event_btnFrutaKeyPressed
 
-    private void atualizarPlacarLabel() {
-        lblPlacar.setText("Placar: J1 (" + placarJ1 + ") vs J2 (" + placarJ2 + ")");
-    }
-    
+    private void btnReiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReiniciarActionPerformed
+        Movimenta.reiniciarPartida(txtPlacar,
+                btnFruta,
+                pnlJogo.getBounds().width,
+                pnlJogo.getBounds().height);
+    }//GEN-LAST:event_btnReiniciarActionPerformed
+
+
     public static void main(String args[]) {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -187,15 +242,17 @@ public class ServidorJogador1 extends javax.swing.JFrame {
     }
     ServerSocket servidor;
     Socket socket_jogador2;
-    ObjectOutputStream saida;
-    ObjectInputStream entrada;
     Componente c;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonFruta;
-    private javax.swing.JButton jButtonJogador1;
-    private javax.swing.JButton jButtonJogador2;
-    private javax.swing.JPanel jPanelJogador1;
-    private javax.swing.JLabel lblPlacar;
+    private javax.swing.JButton btnFruta;
+    private javax.swing.JButton btnJ1;
+    private javax.swing.JButton btnJ2;
+    private javax.swing.JButton btnReiniciar;
+    private javax.swing.JLabel lblJ1;
+    private javax.swing.JLabel lblJ2;
+    private javax.swing.JPanel pnlJogo;
+    private javax.swing.JPanel pnlSuperior;
+    private javax.swing.JTextField txtPlacar;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,10 +5,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
-public class ClienteJogador2 extends javax.swing.JFrame {
 
-    private int placarJ1 = 0;
-    private int placarJ2 = 0;
+public class ClienteJogador2 extends javax.swing.JFrame {
+    Comunicador comunicador;
 
     public ClienteJogador2() {
         initComponents();
@@ -17,23 +16,24 @@ public class ClienteJogador2 extends javax.swing.JFrame {
             @Override
             public void run() {
                 try {
-                    String host = "localhost"; //JOptionPane.showInputDialog(null, "Endereço do servidor");
-                    int porta = 12345; //Integer.parseInt(JOptionPane.showInputDialog(null, "Porta lógica do servidor (padrão 12345)"));
+                    String host = "localhost";
+                    int porta = 12345;
                     socket_jogador1 = new Socket(host, porta);
-
-                    final String ipServidor = socket_jogador1.getInetAddress().getHostAddress();
-                    lblInfo.setText("IP: " + ipServidor + " - Porta: " + porta);
-
-                    saida = new ObjectOutputStream(socket_jogador1.getOutputStream());
-                    entrada = new ObjectInputStream(socket_jogador1.getInputStream());
-
+                    
+                   comunicador = new Comunicador(socket_jogador1);
+                   
+                   final String ipServidor = socket_jogador1.getInetAddress().getHostAddress();
+                   lblInfo.setText("IP: " + ipServidor + " - Porta: " + porta);
+                   
                     while (true) {
-                        c = (Componente) entrada.readObject();
+                        c = comunicador.recebeComponente();
+                        //se for jogador
                         if (c.tipo == Componente.JOGADOR) {
-                            jButtonJogador1.setBounds(c.x, c.y, c.largura, c.altura);
-                        } else if (c.tipo == Componente.FRUTA) {
-                            jButtonFruta.setBounds(c.x, c.y, c.largura, c.altura);
-                            placarJ1++;
+                            btnJ1.setBounds(c.x, c.y, c.largura, c.altura);
+                        } //se for fruta
+                        else if (c.tipo == Componente.FRUTA) {
+                            btnFruta.setBounds(c.x, c.y, c.largura, c.altura);
+                            Movimenta.adicionarPonto(1, txtPlacar);
                         }
                     }
                 } catch (Exception e) {
@@ -47,138 +47,180 @@ public class ClienteJogador2 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanelJogador2 = new javax.swing.JPanel();
-        jButtonJogador1 = new javax.swing.JButton();
-        jButtonFruta = new javax.swing.JButton();
-        jButtonJogador2 = new javax.swing.JButton();
+        pnlJogo = new javax.swing.JPanel();
+        btnJ1 = new javax.swing.JButton();
+        btnFruta = new javax.swing.JButton();
+        btnJ2 = new javax.swing.JButton();
+        pnlSuperior = new javax.swing.JPanel();
+        lblJ1 = new javax.swing.JLabel();
+        lblJ2 = new javax.swing.JLabel();
+        txtPlacar = new javax.swing.JTextField();
         lblInfo = new javax.swing.JLabel();
-        lblPlacar = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jogador 2 - CLIENTE");
 
-        jButtonJogador1.setText("j1");
-        jButtonJogador1.setFocusable(false);
+        btnJ1.setText("j1");
+        btnJ1.setFocusable(false);
 
-        jButtonFruta.setBackground(new java.awt.Color(255, 204, 0));
-        jButtonFruta.setText("@");
-        jButtonFruta.addKeyListener(new java.awt.event.KeyAdapter() {
+        btnFruta.setBackground(new java.awt.Color(255, 204, 0));
+        btnFruta.setText("@");
+        btnFruta.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jButtonFrutaKeyPressed(evt);
+                btnFrutaKeyPressed(evt);
             }
         });
 
-        jButtonJogador2.setText("j2");
-        jButtonJogador2.setFocusable(false);
+        btnJ2.setText("j2");
+        btnJ2.setFocusable(false);
 
-        lblInfo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblInfo.setText("Não conectado");
-
-        lblPlacar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblPlacar.setText("Placar: J1 (0) vs J2 (0)");
-
-        javax.swing.GroupLayout jPanelJogador2Layout = new javax.swing.GroupLayout(jPanelJogador2);
-        jPanelJogador2.setLayout(jPanelJogador2Layout);
-        jPanelJogador2Layout.setHorizontalGroup(
-            jPanelJogador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelJogador2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButtonJogador1)
-                .addGap(85, 85, 85)
-                .addComponent(jButtonFruta)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE)
-                .addComponent(jButtonJogador2)
+        javax.swing.GroupLayout pnlJogoLayout = new javax.swing.GroupLayout(pnlJogo);
+        pnlJogo.setLayout(pnlJogoLayout);
+        pnlJogoLayout.setHorizontalGroup(
+            pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlJogoLayout.createSequentialGroup()
+                .addGroup(pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlJogoLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnJ1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlJogoLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnJ2)))
                 .addContainerGap())
-            .addGroup(jPanelJogador2Layout.createSequentialGroup()
-                .addGap(104, 104, 104)
-                .addGroup(jPanelJogador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblPlacar)
-                    .addComponent(lblInfo))
+            .addGroup(pnlJogoLayout.createSequentialGroup()
+                .addGap(209, 209, 209)
+                .addComponent(btnFruta)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanelJogador2Layout.setVerticalGroup(
-            jPanelJogador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelJogador2Layout.createSequentialGroup()
+        pnlJogoLayout.setVerticalGroup(
+            pnlJogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlJogoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnJ1)
+                .addGap(174, 174, 174)
+                .addComponent(btnFruta)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
+                .addComponent(btnJ2)
+                .addContainerGap())
+        );
+
+        lblJ1.setText("Jogador 1");
+
+        lblJ2.setText("Jogador 2");
+
+        txtPlacar.setEditable(false);
+        txtPlacar.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtPlacar.setText("x");
+        txtPlacar.setBorder(javax.swing.BorderFactory.createCompoundBorder(null, javax.swing.BorderFactory.createCompoundBorder()));
+        txtPlacar.setEnabled(false);
+
+        lblInfo.setText("INFO");
+
+        javax.swing.GroupLayout pnlSuperiorLayout = new javax.swing.GroupLayout(pnlSuperior);
+        pnlSuperior.setLayout(pnlSuperiorLayout);
+        pnlSuperiorLayout.setHorizontalGroup(
+            pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
+                .addContainerGap(58, Short.MAX_VALUE)
+                .addComponent(lblJ1)
+                .addGap(39, 39, 39)
+                .addComponent(txtPlacar, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(lblJ2)
+                .addGap(43, 43, 43))
+            .addGroup(pnlSuperiorLayout.createSequentialGroup()
+                .addGap(206, 206, 206)
                 .addComponent(lblInfo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblPlacar)
-                .addGap(93, 93, 93)
-                .addGroup(jPanelJogador2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonFruta)
-                    .addComponent(jButtonJogador2)
-                    .addComponent(jButtonJogador1))
-                .addContainerGap(144, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlSuperiorLayout.setVerticalGroup(
+            pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSuperiorLayout.createSequentialGroup()
+                .addContainerGap(9, Short.MAX_VALUE)
+                .addComponent(lblInfo)
+                .addGap(18, 18, 18)
+                .addGroup(pnlSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblJ1)
+                    .addComponent(lblJ2)
+                    .addComponent(txtPlacar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(41, 41, 41))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanelJogador2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(pnlJogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnlSuperior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelJogador2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(pnlSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(pnlJogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonFrutaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButtonFrutaKeyPressed
+    private void btnFrutaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnFrutaKeyPressed
         switch (evt.getKeyCode()) {
             case 37:
-                Movimenta.irEsquerda(jButtonJogador2);
+                Movimenta.irEsquerda(btnJ2);
                 break;
             case 38:
-                Movimenta.irCima(jButtonJogador2);
+                Movimenta.irCima(btnJ2);
                 break;
             case 39:
-                Movimenta.irDireita(jButtonJogador2, jPanelJogador2.getBounds().width);
+                Movimenta.irDireita(btnJ2, pnlJogo.getBounds().width);
                 break;
             case 40:
-                Movimenta.irBaixo(jButtonJogador2, jPanelJogador2.getBounds().height);
+                Movimenta.irBaixo(btnJ2, pnlJogo.getBounds().height);
                 break;
         }
-        if (Movimenta.pegou(jButtonJogador2, jButtonFruta)) {
-            placarJ2++;
-            atualizarPlacarLabel();
-            Movimenta.posicionaAleatorio(jButtonFruta,
-                    jPanelJogador2.getBounds().width,
-                    jPanelJogador2.getBounds().height);
+        if (Movimenta.pegou(btnJ2, btnFruta)) {
+            
+            Movimenta.adicionarPonto(2, txtPlacar);
+            Movimenta.posicionaAleatorio(btnFruta,
+                    pnlJogo.getBounds().width,
+                    pnlJogo.getBounds().height);
+            
+            if (!Movimenta.isJogoFinalizado()) {
+            Movimenta.posicionaAleatorio(btnFruta,
+                                         pnlJogo.getBounds().width,
+                                         pnlJogo.getBounds().height);
             try {
-                saida.flush();
-                c = new Componente(jButtonFruta.getBounds().x,
-                        jButtonFruta.getBounds().y,
-                        jButtonFruta.getBounds().width,
-                        jButtonFruta.getBounds().height);
+                c = new Componente(btnFruta.getBounds().x,
+                        btnFruta.getBounds().y,
+                        btnFruta.getBounds().width,
+                        btnFruta.getBounds().height);
                 c.tipo = Componente.FRUTA;
-                saida.writeObject(c);
+                comunicador.enviaComponente(c);
             } catch (Exception e) {
                 System.out.println("Erro ao enviar a fruta");
+            }
             }
         }
         //enviando o botao do jogador2 para o servidor
         try {
-            saida.flush();
-            c = new Componente(jButtonJogador2.getBounds().x,
-                    jButtonJogador2.getBounds().y,
-                    jButtonJogador2.getBounds().width,
-                    jButtonJogador2.getBounds().height);
+            c = new Componente(btnJ2.getBounds().x,
+                    btnJ2.getBounds().y,
+                    btnJ2.getBounds().width,
+                    btnJ2.getBounds().height);
             c.tipo = Componente.JOGADOR;
-            saida.writeObject(c);
+            comunicador.enviaComponente(c);
         } catch (Exception e) {
-            System.out.println("Erro ao enviar o jogador 2");
+                System.out.println("Erro ao enviar o jogador 2");
         }
-    }//GEN-LAST:event_jButtonFrutaKeyPressed
+    }//GEN-LAST:event_btnFrutaKeyPressed
 
-    private void atualizarPlacarLabel() {
-        lblPlacar.setText("Placar: J1 (" + placarJ1 + ") vs J2 (" + placarJ2 + ")");
-    }
 
     public static void main(String args[]) {
-
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ClienteJogador2().setVisible(true);
@@ -187,16 +229,18 @@ public class ClienteJogador2 extends javax.swing.JFrame {
     }
 
     Socket socket_jogador1;
-    ObjectOutputStream saida;
-    ObjectInputStream entrada;
+
     Componente c;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonFruta;
-    private javax.swing.JButton jButtonJogador1;
-    private javax.swing.JButton jButtonJogador2;
-    private javax.swing.JPanel jPanelJogador2;
+    private javax.swing.JButton btnFruta;
+    private javax.swing.JButton btnJ1;
+    private javax.swing.JButton btnJ2;
     private javax.swing.JLabel lblInfo;
-    private javax.swing.JLabel lblPlacar;
+    private javax.swing.JLabel lblJ1;
+    private javax.swing.JLabel lblJ2;
+    private javax.swing.JPanel pnlJogo;
+    private javax.swing.JPanel pnlSuperior;
+    private javax.swing.JTextField txtPlacar;
     // End of variables declaration//GEN-END:variables
 }
