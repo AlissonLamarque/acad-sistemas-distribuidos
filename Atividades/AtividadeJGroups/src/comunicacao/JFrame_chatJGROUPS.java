@@ -18,6 +18,7 @@ public class JFrame_chatJGROUPS extends javax.swing.JFrame {
      */
     public JFrame_chatJGROUPS() {
         initComponents();
+        setTitle("privado");
         jButton_sairGrupo.setEnabled(false);
         jTextArea_mensagensGerais.setEditable(false);
         jTextArea_mensagensGerais.setFocusable(false);
